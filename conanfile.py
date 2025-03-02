@@ -1,6 +1,8 @@
 from conan import ConanFile
 from conan.tools.cmake import CMakeToolchain, CMake, cmake_layout, CMakeDeps
-from conan.tools.scm import Git
+# from conan.tools.scm import Git
+import subprocess
+
 
 class coin3dRecipe(ConanFile):
     name = "coin3d"
@@ -23,9 +25,11 @@ class coin3dRecipe(ConanFile):
     exports_sources = "CMakeLists.txt", "src/*", "include/*"
 
     def source(self):
-        git = Git(self)
-        git.run("clone https://github.com/coin3d/coin.git")
-        git.run("checkout 8f19fe933040bbbe74dee474ad2231291b9b306e")
+        # git = Git(self)
+        # git.run("clone https://github.com/coin3d/coin.git")
+        # git.run("checkout 8f19fe933040bbbe74dee474ad2231291b9b306e")
+        subprocess.run(["git", "clone", "https://github.com/coin3d/coin.git"], check=True)
+        subprocess.run(["git", "-C", "coin", "checkout", "8f19fe933040bbbe74dee474ad2231291b9b306e"], check=True)
 
     def config_options(self):
         if self.settings.os == "Windows":
