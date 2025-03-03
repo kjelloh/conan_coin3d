@@ -28,12 +28,17 @@ class coin3dRecipe(ConanFile):
         # git = Git(self)
         # git.run("clone https://github.com/coin3d/coin.git")
         # git.run("checkout 8f19fe933040bbbe74dee474ad2231291b9b306e")
-        subprocess.run(["git", "clone", "https://github.com/coin3d/coin.git"], check=True)
+        subprocess.run(["git", "clone", "--recurse-submodules", "https://github.com/coin3d/coin.git"], check=True)
         subprocess.run(["git", "-C", "coin", "checkout", "8f19fe933040bbbe74dee474ad2231291b9b306e"], check=True)
+
+    def requirements(self):
+        self.requires("boost/1.87.0")
 
     def config_options(self):
         if self.settings.os == "Windows":
             self.options.rm_safe("fPIC")
+        if self.options.get_safe("boost"):
+            self.options["boost"].header_only = True            
 
     def configure(self):
         if self.options.shared:
