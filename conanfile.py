@@ -1,6 +1,6 @@
 from conan import ConanFile
 from conan.tools.cmake import CMakeToolchain, CMake, cmake_layout, CMakeDeps
-# from conan.tools.scm import Git
+from conan.errors import ConanInvalidConfiguration
 import subprocess
 
 
@@ -55,8 +55,24 @@ class coin3dRecipe(ConanFile):
 
     def build(self):
         cmake = CMake(self)
-        cmake.configure()
-        cmake.build()
+
+        if self.settings.os == "Macos":
+            # Configuration for macOS build
+            cmake.configure(
+                source_dir=self.source_folder,
+                build_dir=self.build_folder,
+                args=[
+                    "-DCMAKE_BUILD_TYPE={}".format(self.settings.build_type),
+                    "-DCMAKE_INSTALL_PREFIX={}".format(self.package_folder),
+                    "-DCOIN_BUILD_DOCUMENTATION=OFF",
+                    "-DCOIN_BUILD_MAC_FRAMEWORK=OFF",
+                    "-G Unix Makefiles",  # Specify the generator
+                    "-B coin_build"       # Specify the build output folder
+                ]
+            )
+            cmake.build()
+        else:
+            raise ConanInvalidConfiguration("Sorry, This coin3d recepie does not support this os")
 
     def package(self):
         cmake = CMake(self)
