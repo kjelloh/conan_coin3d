@@ -1,6 +1,28 @@
 # conan_coin3d
 A Conan package of the  Coin3D C++ library
 
+250303 - Cmake on coin3d provided files generates error
+```sh
+CMake Error: File /Users/kjell-olovhogdahl/Documents/GitHub/conan_coin3d/coin/src/Coin.pc.cmake.in does not exist.
+CMake Error at coin/src/CMakeLists.txt:395 (configure_file):
+  configure_file Problem configuring file
+
+
+CMake Error: File /Users/kjell-olovhogdahl/Documents/GitHub/conan_coin3d/coin/src/coin.cfg.cmake.in does not exist.
+CMake Error at coin/src/CMakeLists.txt:398 (configure_file):
+  configure_file Problem configuring file
+```
+
+250302 - git clone 'raw' now works
+```python
+def source(self):
+        # git = Git(self)
+        # git.run("clone https://github.com/coin3d/coin.git")
+        # git.run("checkout 8f19fe933040bbbe74dee474ad2231291b9b306e")
+        subprocess.run(["git", "clone", "--recurse-submodules", "https://github.com/coin3d/coin.git"], check=True)
+        subprocess.run(["git", "-C", "coin", "checkout", "8f19fe933040bbbe74dee474ad2231291b9b306e"], check=True)
+```
+
 250302 - git clone in conanfile.py fails with 'RPC failed; curl 92 HTTP/2 stream 5 was not closed cleanly'
          But: git clone from shell in macOS works fine?
 

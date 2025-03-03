@@ -50,29 +50,22 @@ class coin3dRecipe(ConanFile):
     def generate(self):
         deps = CMakeDeps(self)
         deps.generate()
+
         tc = CMakeToolchain(self)
+
+        if self.settings.os == "Macos":
+            tc.generator = "Unix Makefiles"
+
+        tc.variables["CMAKE_BUILD_TYPE"] = str(self.settings.build_type)
+        tc.variables["CMAKE_INSTALL_PREFIX"] = self.package_folder
+        tc.variables["COIN_BUILD_DOCUMENTATION"] = "OFF"
+        tc.variables["COIN_BUILD_MAC_FRAMEWORK"] = "OFF"
+
         tc.generate()
 
     def build(self):
         cmake = CMake(self)
-
-        if self.settings.os == "Macos":
-            # Configuration for macOS build
-            cmake.configure(
-                source_dir=self.source_folder,
-                build_dir=self.build_folder,
-                args=[
-                    "-DCMAKE_BUILD_TYPE={}".format(self.settings.build_type),
-                    "-DCMAKE_INSTALL_PREFIX={}".format(self.package_folder),
-                    "-DCOIN_BUILD_DOCUMENTATION=OFF",
-                    "-DCOIN_BUILD_MAC_FRAMEWORK=OFF",
-                    "-G Unix Makefiles",  # Specify the generator
-                    "-B coin_build"       # Specify the build output folder
-                ]
-            )
-            cmake.build()
-        else:
-            raise ConanInvalidConfiguration("Sorry, This coin3d recepie does not support this os")
+        cmake.build()
 
     def package(self):
         cmake = CMake(self)
